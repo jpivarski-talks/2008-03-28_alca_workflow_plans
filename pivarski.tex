@@ -1,0 +1,187 @@
+\documentclass[compress]{beamer}
+\usepackage{ifthen,verbatim,hyperref}
+
+\title{iCSA08 Workflow and Performance Metrics \\ Muon-HIP Alignment}
+\author{Jim Pivarski, Alexei Safonov, K\'aroly Banicz$^*$}
+\institute{Texas A\&M University, $^*$FermiLab}
+\date{28 March, 2008}
+
+\newcommand{\isnote}{}
+\xdefinecolor{lightyellow}{rgb}{1.,1.,0.25}
+\xdefinecolor{darkblue}{rgb}{0.1,0.1,0.7}
+
+%% Uncomment this to get annotations
+%% \def\notes{\addtocounter{page}{-1}
+%%            \renewcommand{\isnote}{*}
+%% 	   \beamertemplateshadingbackground{lightyellow}{white}
+%%            \begin{frame}
+%%            \frametitle{Notes for the previous page (page \insertpagenumber)}
+%%            \itemize}
+%% \def\endnotes{\enditemize
+%% 	      \end{frame}
+%%               \beamertemplateshadingbackground{white}{white}
+%%               \renewcommand{\isnote}{}}
+
+%% Uncomment this to not get annotations
+\def\notes{\comment}
+\def\endnotes{\endcomment}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{\mbox{ } \hfill
+\begin{minipage}{5.5 cm}
+\vspace{-0.75 cm} \small
+\end{minipage} \hfill
+\begin{minipage}{4.5 cm}
+\vspace{-0.75 cm} \small
+\begin{flushright}
+\ifthenelse{\equal{\insertpagenumber}{1}}{}{Jim Pivarski \hspace{0.2 cm} \insertpagenumber\isnote/\pageref{numpages}}
+\end{flushright}
+\end{minipage}\mbox{\hspace{0.2 cm}}\includegraphics[height=1 cm]{../cmslogo} \hspace{0.1 cm} \includegraphics[height=1 cm]{../tamulogo} \hspace{0.01 cm} \vspace{-1.05 cm}}
+
+\begin{document}
+\frame{\titlepage}
+
+%% \begin{notes}
+%% \item This is the annotated version of my talk.
+%% \item If you want the version that I am presenting, download the one
+%% labeled ``slides'' on Indico (or just ignore these yellow pages).
+%% \item The annotated version is provided for extra detail and a written
+%% record of comments that I intend to make orally.
+%% \item Yellow notes refer to the content on the {\it previous} page.
+%% \item All other slides are identical for the two versions.
+%% \end{notes}
+
+\begin{frame}
+\frametitle{The twiki page}
+
+\begin{itemize}\setlength{\itemsep}{0.75 cm}
+\item Filled in iCSA08 muon alignment twiki page
+
+\textcolor{blue}{\tt \small \underline{\href{https://twiki.cern.ch/twiki/bin/view/CMS/CSA08AlignMuon}{https://twiki.cern.ch/twiki/bin/view/CMS/CSA08AlignMuon}}}
+
+\vspace{0.25 cm}
+\begin{itemize}\setlength{\itemsep}{0.5 cm}
+\item Defined iCSA08 workflows
+
+\item Listed event samples, step-by-step procedures, priorities
+
+\item Commented on validation and monitoring
+\end{itemize}
+
+\item This talk will be a short summary of the above
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The workflows}
+
+\begin{itemize}\setlength{\itemsep}{0.1 cm}
+\item Whole muon system ``baseline'' alignment
+\begin{itemize}
+\item align individual chambers relative to the tracker \mbox{(high-$p_T$ tracks)\hspace{-1 cm}}
+\item minimal goal (not delivering this would be failure)
+\end{itemize}
+
+\item CSC chambers-in-ring alignment
+\begin{itemize}
+\item two stages: \textcolor{darkblue}{\scriptsize (1)} align CSCs relative to each other in rings and \textcolor{darkblue}{\scriptsize (2)} align rings relative to the tracker
+\item step \textcolor{darkblue}{\scriptsize (1)} is the data- and CPU-intensive step
+\item special stream to deliver tracks with overlap hits, drawn from normal I.P.\ muons
+\item new stream will be tested in 1\_8\_X pre-CSA
+\end{itemize}
+
+\item CSC layer alignment
+\begin{itemize}
+\item align layers relative to layer 1 in each CSC chamber
+\item technique is similar to the above, but without overlap requirement (normal AlCa stream)
+\end{itemize}
+
+\item CSC beam-halo alignment
+\begin{itemize}
+\item two parts: chambers-in-ring and layer, like the above
+\item technique is the same (or very similar); event \mbox{samples are different\hspace{-1 cm}}
+\item new triggers/streams not in pre-CSA; we'll need to test \mbox{in parallel\hspace{-1 cm}}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Resources Needed}
+
+A little vague at the moment: the baseline procedure is the only one we know well.
+
+\vfill
+Baseline requirements:
+\begin{itemize}
+\item half a million tracks (18~GB), with a filtered copy on T2\_CH\_CAF
+\item 50 CPUs for 10 hours
+\item 500~MB of AFS space (only 85~MB needs to be saved permanantly)
+\end{itemize}
+
+\vfill
+{\it Each} of the other workflows will have similar requirements
+
+(including a processed copy of input data on T2\_CH\_CAF)
+
+\vfill
+April is devoted to studying each of the other workflows in detail; we
+can have quantitative estimates by the end of the month
+\end{frame}
+
+\begin{frame}
+\frametitle{Monitoring}
+
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item Before alignment: put MuonAlignmentAnalyzer in the production jobs?
+\item During alignment: 500~MB of diagnostics plots that we can look at in an emergency
+\item Just after alignment: 85~MB of summary residuals and database geometry comparisons
+\item Just after that: run a small sample through MuonAlignmentAnalyzer
+\item In the re-reconstruction: put MuonAlignmentAnalyzer in the production jobs?
+\end{itemize}
+
+\vfill
+\hspace{-0.83 cm} \textcolor{darkblue}{\Large Output format}
+
+\vfill
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item Database records in an SQLite file
+\item or is direct writing-to-database a goal of this exercise?
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusions}
+
+\Large
+
+Four workflows considered now, one is essential
+
+\vfill
+The others are in development, and will be much better understood by the end of April
+
+\vfill
+Much more detail on twiki page
+
+\label{numpages}
+\end{frame}
+
+
+%% \begin{frame}
+%% \frametitle{Outline}
+%% \begin{itemize}\setlength{\itemsep}{0.75 cm}
+%% \item 
+%% \end{itemize}
+%% %% \hspace{-0.83 cm} \textcolor{darkblue}{\Large Outline2}
+%% \end{frame}
+
+%% \section*{First section}
+%% \begin{frame}
+%% \begin{center}
+%% \Huge \textcolor{blue}{First section}
+%% \end{center}
+%% \end{frame}
+
+%% \begin{frame}
+%% \end{frame}
+
+\end{document}
